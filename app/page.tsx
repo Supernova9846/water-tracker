@@ -61,7 +61,7 @@ export default function Home() {
           </svg>
         </Link>
         <h1 className="text-4xl font-black text-blue-900 dark:text-blue-300 tracking-tight">WaterTracker</h1>
-        <p className="text-gray-500 dark:text-gray-400 font-medium tracking-wide">Complete Household Monitoring</p>
+        <p className="text-gray-500 dark:text-gray-400 font-medium tracking-wide">Water usage Tracker</p>
       </div>
 
       <div className="flex flex-wrap justify-center mb-12 max-w-5xl">
