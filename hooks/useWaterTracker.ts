@@ -8,7 +8,19 @@ export interface HistoryItem {
     timestamp: Date;
 }
 
-export const useWaterTracker = () => {
+interface WaterTrackerOptions {
+    costPerGallon?: number;
+    showerFlow?: number;
+    sinkFlow?: number;
+    toiletFlow?: number;
+}
+
+export const useWaterTracker = ({
+    costPerGallon = 0.006,
+    showerFlow    = 2.5,
+    sinkFlow      = 2.2,
+    toiletFlow    = 1.6,
+}: WaterTrackerOptions = {}) => {
     const [activeSessions, setActiveSessions] = useState<{ type: string, start: Date }[]>([]);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -34,8 +46,8 @@ export const useWaterTracker = () => {
             setHistory(prev => [{
                 type: 'toilet',
                 duration: 0,
-                gallons: 1.6,
-                cost: 0.05,
+                gallons: toiletFlow,
+                cost: toiletFlow * costPerGallon,
                 timestamp: new Date()
             }, ...prev]);
             return;
@@ -44,11 +56,10 @@ export const useWaterTracker = () => {
         const existingSession = getActiveSessionFor(type);
 
         if (existingSession) {
-            // FIX: Defining flowRate here so the code knows what it is
-            const seconds = getElapsedSeconds(type);
-            const flowRate = type === 'shower' ? 2.1 : 1.5;
-            const gallons = (seconds / 60) * flowRate;
-            const cost = gallons * 0.03;
+            const seconds  = getElapsedSeconds(type);
+            const flowRate = type === 'shower' ? showerFlow : sinkFlow;
+            const gallons  = (seconds / 60) * flowRate;
+            const cost     = gallons * costPerGallon;
 
             setHistory(prev => [{
                 type,
