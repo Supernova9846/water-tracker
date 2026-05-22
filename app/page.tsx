@@ -1,10 +1,21 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { useSettings } from '../context/SettingsContext'
 import { useWaterTracker } from '../hooks/useWaterTracker'
 
 export default function Home() {
   const { costPerGallon, showerFlow, sinkFlow, toiletFlow } = useSettings()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  useEffect(() => {
+    if (!localStorage.getItem('onboarded')) setShowOnboarding(true)
+  }, [])
+
+  const dismissOnboarding = () => {
+    localStorage.setItem('onboarded', '1')
+    setShowOnboarding(false)
+  }
   const { toggleTimer, getActiveSessionFor, getElapsedSeconds, history } = useWaterTracker({
     costPerGallon,
     showerFlow,
@@ -50,6 +61,22 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center py-12 min-h-screen bg-gray-100 dark:bg-gray-900 p-4 text-gray-900 dark:text-gray-100">
       <div className="text-center mb-10 relative w-full max-w-5xl">
+        {showOnboarding && (
+          <div className="absolute right-8 top-0 z-10 w-56 rounded-2xl bg-blue-600 text-white text-sm shadow-xl p-4">
+            <p className="font-semibold mb-1">Welcome!</p>
+            <p className="text-blue-100 text-xs leading-relaxed">
+              Tap the gear icon to set your location, fixture models, and theme for accurate readings.
+            </p>
+            <button
+              onClick={dismissOnboarding}
+              className="mt-3 w-full rounded-xl bg-white text-blue-600 font-bold text-xs py-1.5 hover:bg-blue-50 transition-colors"
+            >
+              Got it
+            </button>
+            <div className="absolute -right-2 top-3 w-0 h-0 border-t-8 border-b-8 border-l-8 border-t-transparent border-b-transparent border-l-blue-600" />
+          </div>
+        )}
+
         <Link
           href="/settings"
           aria-label="Settings"
